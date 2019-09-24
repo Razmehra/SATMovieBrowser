@@ -1,0 +1,67 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:cnvtr="clr-namespace:SATMovieBrowser.Convertors"
+             x:Class="SATMovieBrowser.Views.MovieDetailPage"  NavigationPage.HasNavigationBar="False"
+             NavigationPage.HasBackButton="True" NavigationPage.BackButtonTitle="Back"
+             BackgroundColor="LightGray"
+             >
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <cnvtr:ImagePathConvertor x:Key="imagePathConvertor" />
+            <cnvtr:GenreConverter x:Key="genreConverter"/>
+            <cnvtr:MovieLenghtConverter x:Key="movieLenghtConverter"/>
+            <cnvtr:ItemTappedEventArgsConverter x:Key="ItemTappedConverter" />
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
+    <ContentPage.Content>
+        <ScrollView>
+            <Grid>
+                <Grid.RowDefinitions >
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="75"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width= "*"/>
+                </Grid.ColumnDefinitions>
+                <StackLayout Grid.Row="0" Grid.Column="0"  Orientation="Vertical" BackgroundColor="LightGray" 
+                         HorizontalOptions="FillAndExpand"  Padding="0" Margin="0" >
+                    <!--<Frame BackgroundColor="GhostWhite" Padding="10" Margin="0" CornerRadius="10" HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand" >-->
+                    <StackLayout  Orientation="Vertical" HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand">
+                        <Frame CornerRadius="0" Margin="0" Padding="0" IsClippedToBounds="True" HasShadow="True">
+                            <Image Source="{Binding PosterPath,Converter={StaticResource imagePathConvertor}}" 
+                                    Aspect="Fill" HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand"/>
+                        </Frame>
+                    </StackLayout>
+                    <!--</Frame>-->
+                </StackLayout>
+                <StackLayout Grid.Row="1" Grid.Column="0"  Orientation="Vertical" BackgroundColor="LightGray" 
+                         HorizontalOptions="FillAndExpand"  VerticalOptions="FillAndExpand" Padding="15" Margin="0" >
+
+                    <Frame  BackgroundColor="GhostWhite" Padding="15" Margin="0" CornerRadius="10"  >
+
+                        <StackLayout Orientation="Vertical" HorizontalOptions="FillAndExpand" VerticalOptions="StartAndExpand">
+
+                            <Label   Text="{Binding Title}" TextColor="Black" FontSize="Medium" FontAttributes="Bold"/>
+                            <Label   Text="{Binding Popularity,StringFormat='Popularity: {0:F3}'}" TextColor="OrangeRed" FontSize="Small"  FontAttributes="Italic"/>
+                            <StackLayout Orientation="Vertical" Spacing="5" VerticalOptions="FillAndExpand">
+                                <Label Text="{Binding ReleaseDate,StringFormat='Release Date: {0:MMMM d, yyyy}'}" />
+                                <Label Text="{Binding Duration,Mode=TwoWay}" TextColor="DarkSlateGray" HorizontalTextAlignment="Start"/>
+                                <Label Text="{Binding VoteAverage,StringFormat='IMDB {0:F1}'}" TextColor="DarkSlateGray" FontSize="Micro" FontAttributes="Bold" HorizontalTextAlignment="Start"/>
+                                <Label Text="{Binding Overview}" TextColor="Black" FontSize="Small"
+                                    HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand"
+                                 />
+                            </StackLayout>
+
+                        </StackLayout>
+                    </Frame>
+                </StackLayout>
+                <StackLayout Grid.Row="2" Grid.Column="0" HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand">
+                    <Button Text="Proceed to Checkout" TextColor="Black" FontSize="Small" HorizontalOptions="CenterAndExpand" VerticalOptions="CenterAndExpand"/>
+                </StackLayout>
+            </Grid>
+        </ScrollView>
+    </ContentPage.Content>
+</ContentPage>

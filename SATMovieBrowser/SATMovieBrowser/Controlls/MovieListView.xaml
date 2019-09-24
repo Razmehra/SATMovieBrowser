@@ -1,0 +1,118 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<ContentView xmlns="http://xamarin.com/schemas/2014/forms" 
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:cnvtr="clr-namespace:SATMovieBrowser.Convertors"
+             x:Class="SATMovieBrowser.Controlls.MovieListView"
+             xmlns:controls="clr-namespace:XLabs.Forms.Controls;assembly=XLabs.Forms"
+             >
+    <ContentView.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary>
+                <cnvtr:ImagePathConvertor x:Key="imagePathConvertor" />
+                <cnvtr:GenreConverter x:Key="genreConverter"/>
+                <cnvtr:MovieLenghtConverter x:Key="movieLenghtConverter"/>
+                <cnvtr:ItemTappedEventArgsConverter x:Key="ItemTappedConverter" />
+            </ResourceDictionary>
+        </ResourceDictionary>
+    </ContentView.Resources>
+    <ContentView.Content>
+
+        <Grid Margin="0" Padding="0" BackgroundColor="LightGray">
+            <Grid.RowDefinitions >
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="{Binding ShowFilterPanel}"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <StackLayout Grid.Row="0" Grid.Column="0" Padding="0" Margin="0" HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand" BackgroundColor="LightGray">
+                <StackLayout x:Name="SearchBarLayout" IsVisible="{Binding ShowSearchPanel}" HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand">
+                    <SearchBar x:Name="searchBar" Placeholder="Search items..." 
+                       CancelButtonColor="Orange"
+                       PlaceholderColor="Orange"
+                       TextColor="Black"
+                       HorizontalTextAlignment="Center"
+                       FontSize="Small"
+                       SearchCommand="{Binding PerformSearch}" SearchCommandParameter="{Binding Text, Source={x:Reference  searchBar}}"
+                     />
+                </StackLayout>
+                <StackLayout  Orientation="Horizontal" BackgroundColor="LightGray" 
+                          Margin="0" Padding="0"
+                          HorizontalOptions="EndAndExpand" VerticalOptions="FillAndExpand">
+
+                    <ImageButton Source="Shorting.png" BackgroundColor="Transparent" HorizontalOptions="End" Aspect="AspectFit"
+                      Command="{Binding FilterTabbed}"           
+                      HeightRequest="40" VerticalOptions="CenterAndExpand" 
+                     />
+
+                    <Label Text="Filter" FontSize="Small" FontAttributes="Bold" TextColor="DarkSlateGray" Margin="0,0,5,0" HorizontalOptions="End" VerticalOptions="CenterAndExpand"/>
+                </StackLayout>
+            </StackLayout>
+            <StackLayout Orientation="Horizontal" Grid.Row="1" Grid.Column="0" BackgroundColor="LightGray" 
+                          Margin="0" Padding="0"
+                          HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand">
+                <ListView x:Name="MyList"  Margin="0"  ItemsSource="{Binding MovieResult}" HasUnevenRows="True" CachingStrategy="RecycleElement" SeparatorVisibility="None"
+                    HorizontalOptions="FillAndExpand"  VerticalOptions="FillAndExpand" BackgroundColor="LightGray" 
+                  ItemTapped="MyList_ItemTapped">
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <ViewCell  >
+                                <StackLayout Orientation="Vertical" BackgroundColor="LightGray" HorizontalOptions="FillAndExpand"  Padding="5" Margin="0" >
+                                    <Frame BackgroundColor="GhostWhite" Padding="5" Margin="0" CornerRadius="10"  >
+                                        <StackLayout  Orientation="Horizontal" HorizontalOptions="FillAndExpand" >
+                                            <Frame CornerRadius="10" Margin="0" Padding="0" IsClippedToBounds="True" HasShadow="True">
+                                                <Image Source="{Binding PosterPath,Converter={StaticResource imagePathConvertor}}"  HeightRequest="100" WidthRequest="100" Aspect="Fill"/>
+                                            </Frame>
+                                            <StackLayout Orientation="Vertical" HorizontalOptions="FillAndExpand" VerticalOptions="CenterAndExpand">
+                                                <Label   Text="{Binding Title}" TextColor="Black" FontSize="Small" FontAttributes="Bold"/>
+                                                <StackLayout Orientation="Vertical" Spacing="5">
+                                                    <Label   Text="{Binding Duration,Mode=TwoWay}" TextColor="DarkSlateGray" HorizontalTextAlignment="Start"/>
+                                                    <Label   Text="{Binding VoteAverage,StringFormat='IMDB {0:F1}'}" TextColor="DarkSlateGray" FontSize="Micro" FontAttributes="Bold" HorizontalTextAlignment="Start"/>
+                                                </StackLayout>
+                                            </StackLayout>
+                                        </StackLayout>
+                                    </Frame>
+                                </StackLayout>
+                            </ViewCell>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+
+                </ListView>
+            </StackLayout>
+            <StackLayout Orientation="Horizontal" Grid.Row="2" Grid.Column="0" HorizontalOptions="Fill">
+                <StackLayout Orientation="Vertical"  VerticalOptions="CenterAndExpand" HorizontalOptions="FillAndExpand">
+                    <Label Text="Filter" TextColor="Black" FontSize="Small" FontAttributes="Bold" />
+                    <StackLayout Orientation="Horizontal" HorizontalOptions="FillAndExpand">
+                        <StackLayout Orientation="Vertical">
+                            <StackLayout Orientation="Horizontal">
+                                <!--<Switch x:Name="FilterByMostPopular"  Toggled="FilterByMostPopular_Toggled" IsToggled="{Binding FilterByMostPopular_Toggled}" />-->
+                                <controls:CheckBox Margin="0"  x:Name="ChkFilterByMostPopular"  CheckedChanged="ChkFilterByMostPopular_CheckedChanged"   FontSize="10"  />
+
+                                <Label Text="MostPopular" TextColor="Black" FontSize="Small" />
+                            </StackLayout>
+                            <StackLayout Orientation="Horizontal">
+                                <!--<Switch x:Name="FilterByHighestRated"  Toggled="FilterByHighestRated_Toggled" IsToggled="{Binding FilterByHighestRated_Toggled}" />-->
+                                <controls:CheckBox Margin="0"  x:Name="ChkFilterByHighestRated"  CheckedChanged="ChkFilterByHighestRated_CheckedChanged"   FontSize="10"  />
+                                <Label Text="Highest Rated" TextColor="Black" FontSize="Small" HorizontalOptions="StartAndExpand"/>
+                            </StackLayout>
+                        </StackLayout>
+                        <StackLayout Orientation="Horizontal"  HorizontalOptions="FillAndExpand" Margin="0,-20,0,0" VerticalOptions="CenterAndExpand" >
+                            <StackLayout Orientation="Vertical" Spacing="0" HorizontalOptions="FillAndExpand">
+                                <ImageButton Source="Cancel.png"  BackgroundColor="Transparent" Aspect="AspectFit"   WidthRequest="50" HeightRequest="50" Margin="0,0,0,5" HorizontalOptions="EndAndExpand" VerticalOptions="CenterAndExpand"/>
+                                <Label Text="Cancel" TextColor="Black" FontSize="Micro" WidthRequest="50" HorizontalOptions="EndAndExpand" Margin="0,0,-5,0"/>
+
+                            </StackLayout>
+                            <StackLayout Orientation="Vertical" Spacing="0" HorizontalOptions="FillAndExpand">
+                                <ImageButton Source="Apply.png" BackgroundColor="Transparent" Command="{Binding ApplyFilter}" CommandParameter="" Aspect="AspectFit" WidthRequest="50" HeightRequest="50" Margin="0,0,35,5" HorizontalOptions="EndAndExpand" VerticalOptions="CenterAndExpand"/>
+                                <Label Text="Apply" TextColor="Black" FontSize="Micro" WidthRequest="50" HorizontalOptions="EndAndExpand" Margin="0,0,25,0"/>
+                            </StackLayout>
+                        </StackLayout>
+                    </StackLayout>
+
+                </StackLayout>
+            </StackLayout>
+
+        </Grid>
+    </ContentView.Content>
+</ContentView>
