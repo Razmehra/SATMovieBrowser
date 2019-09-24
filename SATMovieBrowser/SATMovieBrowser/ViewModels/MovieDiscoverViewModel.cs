@@ -23,26 +23,43 @@ namespace SATMovieBrowser.ViewModels
 {
     class MovieDiscoverViewModel : BaseViewModel
     {
-        private bool _SwitchFilterByMostPopularIsfocused { get; set; }
-        public bool SwitchFilterByMostPopularIsfocused
+        private string _searchQuery = "";
+        private string FilterType = "popularity.desc";
+        private bool _inicallbackFromPagination = false;
+        private double _currentPage { get; set; }
+        public double CurrentPage
         {
-            get { return _SwitchFilterByMostPopularIsfocused; }
+            get { return _currentPage; }
+            set { _currentPage = (value == 0 ? 1 : value); OnPropertyChanged("CurrentPage"); }
+        }
+
+
+        private double _minPageCount = 0;// { get; set; }
+        public double MinPageCount
+        {
+            get { return _minPageCount; }
+            set { _minPageCount = (value == 0 ? 1 : value); OnPropertyChanged("MinPageCount"); }
+        }
+
+        private double _maxPageCount = 10;// { get; set; }
+        public double MaxPageCount
+        {
+            get { return _maxPageCount; }
+            set { _maxPageCount = (value == 0 ? 10 : value); OnPropertyChanged("MaxPageCount"); }
+        }
+
+
+        private string _pagesinfo { get; set; }
+        public string PagesInfo
+        {
+            get { return _pagesinfo; }
             set
             {
-                _SwitchFilterByMostPopularIsfocused = value;
-                OnPropertyChanged("SwitchFilterByMostPopularIsfocused");
+                _pagesinfo = value;
+                OnPropertyChanged("PagesInfo");
             }
         }
-        private bool _SwitchFilterByHighestRatedIsfocused { get; set; }
-        public bool SwitchFilterByHighestRatedIsfocused
-        {
-            get { return _SwitchFilterByHighestRatedIsfocused; }
-            set
-            {
-                _SwitchFilterByHighestRatedIsfocused = value;
-                OnPropertyChanged("SwitchFilterByHighestRatedIsfocused");
-            }
-        }
+
 
         private bool _FilterByMostPopular_Toggled { get; set; }
         public bool FilterByMostPopular_Toggled
@@ -116,7 +133,7 @@ namespace SATMovieBrowser.ViewModels
 
 
         public ICommand LoadMovieCommand { get; set; }
-        public ICommand FilterTabbed => new Command(() =>
+        public ICommand FilterTapped => new Command(() =>
         {
             ShowFilterPanel = ShowFilterPanel == 0 ? 100 : 0;
         });
@@ -129,18 +146,20 @@ namespace SATMovieBrowser.ViewModels
                 filter = "popularity.desc";
                 if (FilterByMostPopular_Toggled) filter = "popularity.desc";
                 if (FilterByHighestRated_Toggled) filter = "vote_average.desc";
-                var result = await webServices.GetMovieList(null, filter, false, false, 1, this._gid);
+                FilterType = filter;
+                var result = await webServices.GetMovieList(null, FilterType, false, false, 1, this._gid);
                 // var Values=
                 var discoverdMovies = MovieDiscoverModel.FromJson(result);
 
                 MovieResult = discoverdMovies.Results;
+                await RefreshPagesInformation();
                 FetchDuration(MovieResult);
 
             }
             catch (Exception)
             {
 
-                
+
             }
 
         });
@@ -150,13 +169,20 @@ namespace SATMovieBrowser.ViewModels
 
         public ICommand PerformSearch => new Command<string>(async (string query) =>
         {
+            _searchQuery = query;
             WebService MovieService = new WebService();
             var result = await MovieService.MovieSearch(query);
             // var Values=
+            if (result.Contains("429")) await App.Current.MainPage.DisplayAlert("Http Error", "Too many request..", "Ok");
+            if (result.Contains("False")) return;
             discoverdMovies = MovieDiscoverModel.FromJson(result);
+            string genre = App.MovieGenre.Where(w => w.Key == _gid).FirstOrDefault().Value;
+            //List<Class1> myList;
+            //ObservableCollection<Class1> myOC = new ObservableCollection<Class1>(myList);
+            ObservableCollection<Result> rs = new ObservableCollection<Result>(discoverdMovies.Results.Where(w => w.Genres.Contains(genre)));
 
-            MovieResult = discoverdMovies.Results;
-            FetchDuration(MovieResult);
+            MovieResult = rs;// discoverdMovies.Results;
+            await RefreshPagesInformation();
         });
 
         public void FetchDuration(ObservableCollection<Result> result)
@@ -185,7 +211,24 @@ namespace SATMovieBrowser.ViewModels
 
                         //item.Duration = "";
                     }
-                    MovieResult = discoverdMovies.Results;
+
+                    if (ShowSearchPanel)
+                    {
+                       // return;
+                        // MovieResult = Results;
+                        string genre = App.MovieGenre.Where(w => w.Key == _gid).FirstOrDefault().Value;
+                        //List<Class1> myList;
+                        //ObservableCollection<Class1> myOC = new ObservableCollection<Class1>(myList);
+                        ObservableCollection<Result> rs = new ObservableCollection<Result>(discoverdMovies.Results.Where(w => w.Genres.Contains(genre)));
+
+                        MovieResult = rs;// discoverdMovies.Results;
+                                         // await RefreshPagesInformation();
+
+                    }
+                    else
+                    {
+                        MovieResult = discoverdMovies.Results;
+                    }
 
                 });
 
@@ -222,12 +265,73 @@ namespace SATMovieBrowser.ViewModels
         public async void LoadMovies()
         {
             WebService webServices = new WebService();
-            var result = await webServices.GetMovieList(null, "popularity.desc", false, false, 1, this._gid);
+            var result = await webServices.GetMovieList(null, FilterType, false, false, 1, this._gid);
             // var Values=
             var discoverdMovies = MovieDiscoverModel.FromJson(result);
 
             MovieResult = discoverdMovies.Results;
+            // await Task.Run(async () => { await RefreshPagesInformation(); });
+
+            // await RefreshPagesInformation();
+            MinPageCount = discoverdMovies.Page > 0 ? 1 : 0;
+            MaxPageCount = discoverdMovies.TotalPages;
+            CurrentPage = MinPageCount;
+            PagesInfo = $"{MinPageCount}/{MaxPageCount}";
             FetchDuration(MovieResult);
         }
+
+        private async Task RefreshPagesInformation()
+        {
+            MinPageCount = discoverdMovies.Page > 0 ? 1 : 0;
+            MaxPageCount = discoverdMovies.TotalPages;
+            CurrentPage = MinPageCount;
+            PagesInfo = $"{MinPageCount}/{MaxPageCount}";
+        }
+        public async void UpdatePageInfo()
+        {
+            try
+            {
+                PagesInfo = $"{CurrentPage}/{MaxPageCount}";
+                if (CurrentPage > 1 || _inicallbackFromPagination)
+                {
+                    if (ShowSearchPanel)
+                    {
+                        WebService MovieService = new WebService();
+                        var result = await MovieService.MovieSearch(_searchQuery, long.Parse(CurrentPage.ToString()));
+                        // var Values=
+                        //if (result.Contains("429")) await App.Current.MainPage.DisplayAlert("Http Error", "Too many request..", "Ok");
+                        if (result == "False") return;
+                        discoverdMovies = MovieDiscoverModel.FromJson(result);
+                        string genre = App.MovieGenre.Where(w => w.Key == _gid).FirstOrDefault().Value;
+                        //List<Class1> myList;
+                        //ObservableCollection<Class1> myOC = new ObservableCollection<Class1>(myList);
+                        ObservableCollection<Result> rs = new ObservableCollection<Result>(discoverdMovies.Results.Where(w => w.Genres.Contains(genre)));
+
+                        MovieResult = rs;// discoverdMovies.Results;
+                                         // await RefreshPagesInformation();
+
+                    }
+                    else
+                    {
+                        _inicallbackFromPagination = true;
+                        //https://api.themoviedb.org/3/discover/movie?api_key=063f08b3f72be1c6376635991af1ece7&language=en-US&sort_by=popularity.desc&include_adult=False&include_video=False&page=2&with_genres=28
+                        WebService webServices = new WebService();
+                        var result = await webServices.GetMovieList(null, FilterType, false, false, long.Parse(CurrentPage.ToString()), this._gid);
+                        // var Values=
+                        var discoverdMovies = MovieDiscoverModel.FromJson(result);
+
+                        MovieResult = discoverdMovies.Results;
+
+                    }
+                    FetchDuration(MovieResult);
+                }
+            }
+            catch (Exception)
+            {
+
+
+            }
+        }
+
     }
 }

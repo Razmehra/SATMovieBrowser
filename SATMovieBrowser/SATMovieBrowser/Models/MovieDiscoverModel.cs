@@ -109,6 +109,7 @@ namespace SATMovieBrowser.Models
         public string Duration { get; set; }
 
         public string Genres { get; set; }
+        
 
     }
     

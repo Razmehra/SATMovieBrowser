@@ -27,12 +27,11 @@ namespace SATMovieBrowser.WebServices
             var jsonRequest = new { SessionId = Params[0] };
             return await Result("POST", "Logout", jsonRequest);
         }
-        public async Task<string> GetMovieList(string[] Params = null,string shortby="",bool includeAdult=false,bool include_video=false,long page=1,long with_genres=0)
+        public async Task<string> GetMovieList(string[] Params = null, string shortby = "", bool includeAdult = false, bool include_video = false, long page = 1, long with_genres = 0, string searchText = "")
         {
             var jsonRequest = "";
             //https://api.themoviedb.org/3/discover/movie?api_key=063f08b3f72be1c6376635991af1ece7&language=en-US&sort_by=popularity.desc&include_adult=false&include_video=false&page=1&with_genres=28
-            //string GetString = "3/discover/movie?page=1&include_video=false&include_adult=false&sort_by=popularity.desc&language=en-US&api_key=" + App.ApiKey;
-            string GetString = "3/discover/movie?api_key=" + App.ApiKey + "&language=en-US&sort_by="+shortby+ "&include_adult="+includeAdult+ "&include_video="+include_video+ "&page="+page+ "&with_genres="+with_genres;
+            string GetString = "3/discover/movie?api_key=" + App.ApiKey + "&language=en-US&sort_by=" + shortby + "&include_adult=" + includeAdult + "&include_video=" + include_video + "&page=" + page + (with_genres == 0 ? "" : "&with_genres=" + with_genres+(searchText==""?"":"&query=" + searchText));
 
             var result = await Result("GET", "" + GetString, jsonRequest);
             return result;
@@ -45,12 +44,12 @@ namespace SATMovieBrowser.WebServices
             var result = await Result("GET", "" + GetString, jsonRequest);
             return result;
         }
-        public async Task<string> MovieSearch(string searchText)
+        public async Task<string> MovieSearch(string searchText,long pageno=1)
         {
 
             ///search/movie?api_key=063f08b3f72be1c6376635991af1ece7&language=en-US&query=007&page=1&include_adult=false
             var jsonRequest = "";
-            string GetString = "3/search/movie/?api_key=" + App.ApiKey + "&language=en-US&query=" + searchText +"&page=1&include_adult=false";
+            string GetString = "3/search/movie/?api_key=" + App.ApiKey + "&language=en-US&query=" + searchText + "&page="+pageno+"&include_adult=false";
             var result = await Result("GET", "" + GetString, jsonRequest);
             return result;
         }
@@ -81,7 +80,8 @@ namespace SATMovieBrowser.WebServices
                 }
                 else
                 {
-                    return response.IsSuccessStatusCode.ToString();
+                     return (response.StatusCode.Equals(429)?"429": response.IsSuccessStatusCode.ToString());
+                    //return response.StatusCode.ToString();
                 }
             }
             catch (Exception ex)

@@ -3,7 +3,6 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:cnvtr="clr-namespace:SATMovieBrowser.Convertors"
              x:Class="SATMovieBrowser.Controlls.MovieListView"
-             xmlns:controls="clr-namespace:XLabs.Forms.Controls;assembly=XLabs.Forms"
              >
     <ContentView.Resources>
         <ResourceDictionary>
@@ -39,14 +38,18 @@
                 </StackLayout>
                 <StackLayout  Orientation="Horizontal" BackgroundColor="LightGray" 
                           Margin="0" Padding="0"
-                          HorizontalOptions="EndAndExpand" VerticalOptions="FillAndExpand">
-
-                    <ImageButton Source="Shorting.png" BackgroundColor="Transparent" HorizontalOptions="End" Aspect="AspectFit"
-                      Command="{Binding FilterTabbed}"           
-                      HeightRequest="40" VerticalOptions="CenterAndExpand" 
-                     />
-
-                    <Label Text="Filter" FontSize="Small" FontAttributes="Bold" TextColor="DarkSlateGray" Margin="0,0,5,0" HorizontalOptions="End" VerticalOptions="CenterAndExpand"/>
+                          HorizontalOptions="Fill" VerticalOptions="FillAndExpand">
+                    <StackLayout Orientation="Vertical"  HorizontalOptions="Start" Spacing="0" Padding="0" Margin="0"  >
+                        <Label x:Name="lblPageInfo" Text="{Binding PagesInfo}" FontSize="Micro" FontAttributes="Bold" TextColor="Black" HorizontalOptions="CenterAndExpand"/>
+                        <Stepper x:Name="PageNavigator" Minimum="{Binding MinPageCount}" Maximum="{Binding MaxPageCount}" Increment="1" Value="{Binding CurrentPage}"  ValueChanged="PageNavigator_ValueChanged" />
+                    </StackLayout>
+                    <StackLayout Orientation="Horizontal"  HorizontalOptions="FillAndExpand" Spacing="0" Padding="0" Margin="0" VerticalOptions="CenterAndExpand">
+                        <ImageButton Source="Shorting.png" BackgroundColor="Transparent" HorizontalOptions="EndAndExpand" Aspect="AspectFit"
+                          Command="{Binding FilterTapped}"           
+                          HeightRequest="40" VerticalOptions="CenterAndExpand" 
+                         />
+                        <Label Text="Filter" FontSize="Small" FontAttributes="Bold" TextColor="DarkSlateGray" Margin="0,0,5,0" HorizontalOptions="End" VerticalOptions="CenterAndExpand"/>
+                    </StackLayout>
                 </StackLayout>
             </StackLayout>
             <StackLayout Orientation="Horizontal" Grid.Row="1" Grid.Column="0" BackgroundColor="LightGray" 
@@ -87,13 +90,14 @@
                         <StackLayout Orientation="Vertical">
                             <StackLayout Orientation="Horizontal">
                                 <!--<Switch x:Name="FilterByMostPopular"  Toggled="FilterByMostPopular_Toggled" IsToggled="{Binding FilterByMostPopular_Toggled}" />-->
-                                <controls:CheckBox Margin="0"  x:Name="ChkFilterByMostPopular"  CheckedChanged="ChkFilterByMostPopular_CheckedChanged"   FontSize="10"  />
+                                <CheckBox Margin="0"  x:Name="ChkFilterByMostPopular"  CheckedChanged="ChkFilterByMostPopular_CheckedChanged"  />
 
                                 <Label Text="MostPopular" TextColor="Black" FontSize="Small" />
                             </StackLayout>
                             <StackLayout Orientation="Horizontal">
                                 <!--<Switch x:Name="FilterByHighestRated"  Toggled="FilterByHighestRated_Toggled" IsToggled="{Binding FilterByHighestRated_Toggled}" />-->
-                                <controls:CheckBox Margin="0"  x:Name="ChkFilterByHighestRated"  CheckedChanged="ChkFilterByHighestRated_CheckedChanged"   FontSize="10"  />
+
+                                <CheckBox Margin="0"  x:Name="ChkFilterByHighestRated"  CheckedChanged="ChkFilterByHighestRated_CheckedChanged"  />
                                 <Label Text="Highest Rated" TextColor="Black" FontSize="Small" HorizontalOptions="StartAndExpand"/>
                             </StackLayout>
                         </StackLayout>

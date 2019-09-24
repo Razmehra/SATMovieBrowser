@@ -18,12 +18,21 @@ namespace SATMovieBrowser.Views
         List<ContentView> contentViews { get; set; }
         public TabbedHomePage()
         {
+            ContentPage mPage = new ContentPage() { Title = "ALL" };
+            ContentView content = new MovieListView(0);
+            content.ClassId = "0";
+            mPage.Content = content;
+            mPage.ClassId = "0";
+            mPage.Title = "All";
+
+            Children.Add(mPage);
+
             var GList = App.MovieGenre.ToList();
             foreach (var item in GList)
             {
-               // Task.Run(()=>{ 
-                ContentPage mPage = new ContentPage() { Title = item.Value };
-                ContentView content = new MovieListView(item.Key);
+                // Task.Run(()=>{ 
+                mPage = new ContentPage() { Title = item.Value };
+                content = new MovieListView(item.Key);
                 content.ClassId = item.Key.ToString();
                 mPage.Content = content;
                 mPage.ClassId = item.Key.ToString();

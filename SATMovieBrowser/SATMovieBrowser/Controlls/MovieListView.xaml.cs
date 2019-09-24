@@ -34,38 +34,30 @@ namespace SATMovieBrowser.Controlls
         }
 
 
-        //private void FilterByMostPopular_Toggled(object sender, ToggledEventArgs e)
-        //{
-        //        FilterByHighestRated.IsToggled = false;
-        //}
-
-        //private void FilterByHighestRated_Toggled(object sender, ToggledEventArgs e)
-        //{
-   
-        //        FilterByMostPopular.IsToggled = false;
-
-            
-        //}
-
-        //private void FilterByHighestRated_Focused(object sender, FocusEventArgs e)
-        //{
-        //    VM.SwitchFilterByHighestRatedIsfocused = e.IsFocused;
-        //}
-        //private void FilterByMostPopular_Focused(object sender, FocusEventArgs e)
-        //{
-        //    VM.SwitchFilterByMostPopularIsfocused = e.IsFocused;
-        //}
 
         private void ChkFilterByMostPopular_CheckedChanged(object sender, XLabs.EventArgs<bool> e)
         {
-            if(e.Value)
-            ChkFilterByHighestRated.Checked = false;
+            if (e.Value)
+            {
+                VM.FilterByMostPopular_Toggled = true;
+                VM.FilterByHighestRated_Toggled = false;
+                ChkFilterByHighestRated.IsChecked = false;
+            }
         }
 
         private void ChkFilterByHighestRated_CheckedChanged(object sender, XLabs.EventArgs<bool> e)
         {
-            if(e.Value)
-            ChkFilterByMostPopular.Checked = false;
+            if (e.Value)
+            {
+                VM.FilterByMostPopular_Toggled = false;
+                VM.FilterByHighestRated_Toggled = true;
+                ChkFilterByMostPopular.IsChecked = false;
+            }
+        }
+
+        private void PageNavigator_ValueChanged(object sender, ValueChangedEventArgs e)
+        {
+            VM.UpdatePageInfo();
         }
     }
 }
