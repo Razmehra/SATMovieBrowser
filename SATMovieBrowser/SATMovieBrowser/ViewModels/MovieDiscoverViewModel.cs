@@ -165,23 +165,30 @@ namespace SATMovieBrowser.ViewModels
         });
 
         public ICommand MovieSearch { get; set; }
-        //public ICommand PerformSearch => new Command<string>((string query) =>
 
         public ICommand PerformSearch => new Command<string>(async (string query) =>
         {
+            _inicallbackFromPagination = false;
             _searchQuery = query;
             WebService MovieService = new WebService();
             var result = await MovieService.MovieSearch(query);
             // var Values=
-            if (result.Contains("429")) await App.Current.MainPage.DisplayAlert("Http Error", "Too many request..", "Ok");
+            if (result.Contains("#429#")) await App.Current.MainPage.DisplayAlert("Http Error", "Too many request..", "Ok");
             if (result.Contains("False")) return;
             discoverdMovies = MovieDiscoverModel.FromJson(result);
-            string genre = App.MovieGenre.Where(w => w.Key == _gid).FirstOrDefault().Value;
-            //List<Class1> myList;
-            //ObservableCollection<Class1> myOC = new ObservableCollection<Class1>(myList);
-            ObservableCollection<Result> rs = new ObservableCollection<Result>(discoverdMovies.Results.Where(w => w.Genres.Contains(genre)));
+            if (_gid == 0)
+            {
+                MovieResult = discoverdMovies.Results;
 
-            MovieResult = rs;// discoverdMovies.Results;
+            }
+            else
+            {
+                string genre = App.MovieGenre.Where(w => w.Key == _gid).FirstOrDefault().Value;
+                ObservableCollection<Result> rs = new ObservableCollection<Result>(discoverdMovies.Results.Where(w => w.Genres.Contains(genre)));
+                MovieResult = rs;
+
+            }
+
             await RefreshPagesInformation();
         });
 
@@ -212,13 +219,9 @@ namespace SATMovieBrowser.ViewModels
                         //item.Duration = "";
                     }
 
-                    if (ShowSearchPanel)
+                    if (ShowSearchPanel && _gid != 0)
                     {
-                       // return;
-                        // MovieResult = Results;
                         string genre = App.MovieGenre.Where(w => w.Key == _gid).FirstOrDefault().Value;
-                        //List<Class1> myList;
-                        //ObservableCollection<Class1> myOC = new ObservableCollection<Class1>(myList);
                         ObservableCollection<Result> rs = new ObservableCollection<Result>(discoverdMovies.Results.Where(w => w.Genres.Contains(genre)));
 
                         MovieResult = rs;// discoverdMovies.Results;
@@ -234,7 +237,6 @@ namespace SATMovieBrowser.ViewModels
 
             });
         }
-        //public object SearchResults { get; private set; }
 
         public MovieDiscoverViewModel(long gid = 0, object MCV = null)
         {
@@ -242,7 +244,6 @@ namespace SATMovieBrowser.ViewModels
             MessagingCenter.Subscribe<NavigationMessage>(this, "MovieListView:ShowHideSearchPanel", ShowHideSearchPanel);
 
             LoadMovieCommand = new Command(LoadMovies);
-            // MovieSearch = new Command<string>(OnSearchMovie());
 
             LoadMovies();
         }
@@ -298,26 +299,27 @@ namespace SATMovieBrowser.ViewModels
                     {
                         WebService MovieService = new WebService();
                         var result = await MovieService.MovieSearch(_searchQuery, long.Parse(CurrentPage.ToString()));
-                        // var Values=
-                        //if (result.Contains("429")) await App.Current.MainPage.DisplayAlert("Http Error", "Too many request..", "Ok");
                         if (result == "False") return;
                         discoverdMovies = MovieDiscoverModel.FromJson(result);
-                        string genre = App.MovieGenre.Where(w => w.Key == _gid).FirstOrDefault().Value;
-                        //List<Class1> myList;
-                        //ObservableCollection<Class1> myOC = new ObservableCollection<Class1>(myList);
-                        ObservableCollection<Result> rs = new ObservableCollection<Result>(discoverdMovies.Results.Where(w => w.Genres.Contains(genre)));
+                        if (_gid == 0)
+                        {
+                            MovieResult = discoverdMovies.Results;
+                        }
+                        else
+                        {
+                            string genre = App.MovieGenre.Where(w => w.Key == _gid).FirstOrDefault().Value;
+                            ObservableCollection<Result> rs = new ObservableCollection<Result>(discoverdMovies.Results.Where(w => w.Genres.Contains(genre)));
 
-                        MovieResult = rs;// discoverdMovies.Results;
-                                         // await RefreshPagesInformation();
+                            MovieResult = rs;
+
+                        }
 
                     }
                     else
                     {
                         _inicallbackFromPagination = true;
-                        //https://api.themoviedb.org/3/discover/movie?api_key=063f08b3f72be1c6376635991af1ece7&language=en-US&sort_by=popularity.desc&include_adult=False&include_video=False&page=2&with_genres=28
                         WebService webServices = new WebService();
                         var result = await webServices.GetMovieList(null, FilterType, false, false, long.Parse(CurrentPage.ToString()), this._gid);
-                        // var Values=
                         var discoverdMovies = MovieDiscoverModel.FromJson(result);
 
                         MovieResult = discoverdMovies.Results;

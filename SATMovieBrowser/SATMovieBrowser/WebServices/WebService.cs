@@ -80,7 +80,7 @@ namespace SATMovieBrowser.WebServices
                 }
                 else
                 {
-                     return (response.StatusCode.Equals(429)?"429": response.IsSuccessStatusCode.ToString());
+                     return (response.StatusCode.Equals(429)?"#429#": response.IsSuccessStatusCode.ToString());
                     //return response.StatusCode.ToString();
                 }
             }
