@@ -27,6 +27,14 @@ namespace SATMovieBrowser.ViewModels
         private string FilterType = "popularity.desc";
         private bool _inicallbackFromPagination = false;
         private double _currentPage { get; set; }
+
+        private bool _ActivateIndicator { get; set; }
+        public bool ActivateIndicator
+        {
+            get { return _ActivateIndicator; }
+            set { _ActivateIndicator = value; OnPropertyChanged("ActivateIndicator"); }
+        }
+
         public double CurrentPage
         {
             get { return _currentPage; }
@@ -142,6 +150,7 @@ namespace SATMovieBrowser.ViewModels
         {
             try
             {
+                ActivateIndicator = true;
                 WebService webServices = new WebService();
                 filter = "popularity.desc";
                 if (FilterByMostPopular_Toggled) filter = "popularity.desc";
@@ -154,12 +163,12 @@ namespace SATMovieBrowser.ViewModels
                 MovieResult = discoverdMovies.Results;
                 await RefreshPagesInformation();
                 FetchDuration(MovieResult);
-
+                ActivateIndicator = false;
             }
             catch (Exception)
             {
 
-
+                ActivateIndicator = false;
             }
 
         });
@@ -168,6 +177,7 @@ namespace SATMovieBrowser.ViewModels
 
         public ICommand PerformSearch => new Command<string>(async (string query) =>
         {
+            ActivateIndicator = true;
             _inicallbackFromPagination = false;
             _searchQuery = query;
             WebService MovieService = new WebService();
@@ -188,8 +198,9 @@ namespace SATMovieBrowser.ViewModels
                 MovieResult = rs;
 
             }
-
+           
             await RefreshPagesInformation();
+            ActivateIndicator = false;
         });
 
         public void FetchDuration(ObservableCollection<Result> result)
@@ -265,6 +276,7 @@ namespace SATMovieBrowser.ViewModels
 
         public async void LoadMovies()
         {
+           // ActivateIndicator = true;
             WebService webServices = new WebService();
             var result = await webServices.GetMovieList(null, FilterType, false, false, 1, this._gid);
             // var Values=
@@ -274,10 +286,12 @@ namespace SATMovieBrowser.ViewModels
             // await Task.Run(async () => { await RefreshPagesInformation(); });
 
             // await RefreshPagesInformation();
+          //  ActivateIndicator = false;
             MinPageCount = discoverdMovies.Page > 0 ? 1 : 0;
             MaxPageCount = discoverdMovies.TotalPages;
             CurrentPage = MinPageCount;
             PagesInfo = $"{MinPageCount}/{MaxPageCount}";
+            
             FetchDuration(MovieResult);
         }
 
@@ -292,6 +306,7 @@ namespace SATMovieBrowser.ViewModels
         {
             try
             {
+                ActivateIndicator = true;
                 PagesInfo = $"{CurrentPage}/{MaxPageCount}";
                 if (CurrentPage > 1 || _inicallbackFromPagination)
                 {
@@ -325,13 +340,14 @@ namespace SATMovieBrowser.ViewModels
                         MovieResult = discoverdMovies.Results;
 
                     }
+                    ActivateIndicator = false;
                     FetchDuration(MovieResult);
                 }
             }
             catch (Exception)
             {
 
-
+                ActivateIndicator = false;
             }
         }
 
