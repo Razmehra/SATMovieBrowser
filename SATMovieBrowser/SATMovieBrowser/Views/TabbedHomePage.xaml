@@ -4,9 +4,16 @@
             xmlns:control="clr-namespace:SATMovieBrowser.Controlls"
             x:Class="SATMovieBrowser.Views.TabbedHomePage">
 
-    <NavigationPage.TitleView>
-        <StackLayout Orientation="Vertical" HorizontalOptions="Fill" >
+    <NavigationPage.TitleView >
+        <StackLayout Orientation="Vertical" HorizontalOptions="Fill">
             <StackLayout Orientation="Horizontal" HorizontalOptions="Fill" >
+                <Image x:Name="TMBLogo" Source="TMBLogo.png" HeightRequest="50" WidthRequest="50" 
+                       Aspect="AspectFit"  HorizontalOptions="StartAndExpand" BackgroundColor="Black"/>
+
+                <Label Text="TMBrowser" HorizontalOptions="CenterAndExpand" HorizontalTextAlignment="Center" 
+                       TextColor="Black" FontSize="Small" FontAttributes="Bold"
+                       VerticalOptions="CenterAndExpand" VerticalTextAlignment="Center"/>
+
                 <Image x:Name="ImgSearch" Source="SearchIcon.png" HeightRequest="35" WidthRequest="35" 
                        Aspect="AspectFit"  HorizontalOptions="EndAndExpand">
                     <Image.GestureRecognizers>
@@ -16,20 +23,4 @@
             </StackLayout>
         </StackLayout>
     </NavigationPage.TitleView>
-    <!--<ContentPage Title="All">
-        <control:MovieListView x:Name="MovieList"/>
-    </ContentPage>
-    <ContentPage Title="Tab 1" />
-    <ContentPage Title="Tab 2" />
-    <ContentPage Title="Tab 3" />-->
-    <!--<TabbedPage.ItemTemplate>
-        <DataTemplate>
-                <ContentPage Title="{Binding Value}" >
-                    <StackLayout>
-                        
-                    </StackLayout>
-                </ContentPage>
-     
-        </DataTemplate>
-    </TabbedPage.ItemTemplate>-->
 </TabbedPage>
