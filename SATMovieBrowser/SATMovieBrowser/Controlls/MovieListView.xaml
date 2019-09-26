@@ -2,6 +2,7 @@
 <ContentView xmlns="http://xamarin.com/schemas/2014/forms" 
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:cnvtr="clr-namespace:SATMovieBrowser.Convertors"
+             xmlns:ffimageloading="clr-namespace:FFImageLoading.Forms;assembly=FFImageLoading.Forms"
              x:Class="SATMovieBrowser.Controlls.MovieListView"
              >
     <ContentView.Resources>
@@ -43,12 +44,20 @@
                         <Label x:Name="lblPageInfo" Text="{Binding PagesInfo}" FontSize="Micro" FontAttributes="Bold" TextColor="Black" HorizontalOptions="CenterAndExpand"/>
                         <Stepper x:Name="PageNavigator" Minimum="{Binding MinPageCount}" Maximum="{Binding MaxPageCount}" Increment="1" Value="{Binding CurrentPage}"  ValueChanged="PageNavigator_ValueChanged" />
                     </StackLayout>
-                    <ActivityIndicator x:Name="BusyIndicator" IsRunning="{Binding ActivateIndicator}" IsVisible="{Binding ActivateIndicator}"  WidthRequest="20" HeightRequest="20" VerticalOptions="CenterAndExpand" />
+                    <StackLayout HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand" Margin="0" Padding="0">
+                        <ActivityIndicator x:Name="BusyIndicator" IsRunning="{Binding ActivateIndicator}" IsVisible="{Binding ActivateIndicator}"  WidthRequest="20" HeightRequest="20" VerticalOptions="CenterAndExpand" />
+                    </StackLayout>
                     <StackLayout Orientation="Horizontal"  HorizontalOptions="FillAndExpand" Spacing="0" Padding="0" Margin="0" VerticalOptions="CenterAndExpand">
-                        <ImageButton Source="Shorting.png" BackgroundColor="Transparent" HorizontalOptions="EndAndExpand" Aspect="AspectFit"
+                        <!--<ImageButton Source="Shorting.png"  BackgroundColor="Transparent" HorizontalOptions="EndAndExpand" Aspect="AspectFit"
                           Command="{Binding FilterTapped}"           
-                          HeightRequest="40" VerticalOptions="CenterAndExpand" 
-                         />
+                          HeightRequest="40" WidthRequest="40" VerticalOptions="CenterAndExpand" 
+                         />-->
+                        <ffimageloading:CachedImage Source="Shorting.png"  BackgroundColor="Transparent" HorizontalOptions="EndAndExpand" Aspect="AspectFit"
+                            WidthRequest="40" HeightRequest="40" VerticalOptions="CenterAndExpand">
+                            <ffimageloading:CachedImage.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding FilterTapped}" />
+                            </ffimageloading:CachedImage.GestureRecognizers>
+                        </ffimageloading:CachedImage>
                         <Label Text="Filter" FontSize="Small" FontAttributes="Bold" TextColor="DarkSlateGray" Margin="0,0,5,0" HorizontalOptions="End" VerticalOptions="CenterAndExpand"/>
                     </StackLayout>
                 </StackLayout>
@@ -66,7 +75,14 @@
                                     <Frame BackgroundColor="GhostWhite" Padding="5" Margin="0" CornerRadius="10"  >
                                         <StackLayout  Orientation="Horizontal" HorizontalOptions="FillAndExpand" >
                                             <Frame CornerRadius="10" Margin="0" Padding="0" IsClippedToBounds="True" HasShadow="True">
-                                                <Image Source="{Binding PosterPath,Converter={StaticResource imagePathConvertor}}"  HeightRequest="100" WidthRequest="100" Aspect="Fill"/>
+                                                <!--<Image Source="{Binding PosterPath,Converter={StaticResource imagePathConvertor}}"  HeightRequest="100" WidthRequest="100" Aspect="Fill"/>-->
+                                                <ffimageloading:CachedImage 			                                       
+                                                    HeightRequest="100" WidthRequest="100" Aspect="Fill" 
+			                                        DownsampleToViewSize="False" 
+                                                    FadeAnimationForCachedImages="True" FadeAnimationEnabled="True" CacheType="All" 
+			                                        Source="{Binding PosterPath,Converter={StaticResource imagePathConvertor}}"  >
+                                                </ffimageloading:CachedImage>
+
                                             </Frame>
                                             <StackLayout Orientation="Vertical" HorizontalOptions="FillAndExpand" VerticalOptions="CenterAndExpand">
                                                 <Label   Text="{Binding Title}" TextColor="Black" FontSize="Small" FontAttributes="Bold"/>

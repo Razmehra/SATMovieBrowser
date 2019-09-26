@@ -9,6 +9,7 @@ using Android.OS;
 //using Plugin.CurrentActivity;
 using Xamarin.Forms;
 using Acr.UserDialogs;
+using FFImageLoading.Forms.Platform;
 //using Xamarin.Essentials;
 
 namespace SATMovieBrowser.Droid
@@ -24,8 +25,9 @@ namespace SATMovieBrowser.Droid
             UserDialogs.Init(this);
             base.OnCreate(savedInstanceState);
             //CrossCurrentActivity.Current.Init(this, savedInstanceState);
-
+            FFImageLoading.Forms.Platform.CachedImageRenderer.Init(enableFastRenderer: true);
             global::Xamarin.Forms.Forms.Init(this, savedInstanceState);
+            CachedImageRenderer.InitImageViewHandler();
             LoadApplication(new App());
         }
     }
