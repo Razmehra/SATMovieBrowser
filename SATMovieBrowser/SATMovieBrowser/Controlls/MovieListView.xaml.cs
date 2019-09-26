@@ -35,7 +35,7 @@ namespace SATMovieBrowser.Controlls
 
 
 
-        private void ChkFilterByMostPopular_CheckedChanged(object sender, XLabs.EventArgs<bool> e)
+        private void ChkFilterByMostPopular_CheckedChanged(object sender, CheckedChangedEventArgs e)
         {
             if (e.Value)
             {
@@ -45,7 +45,7 @@ namespace SATMovieBrowser.Controlls
             }
         }
 
-        private void ChkFilterByHighestRated_CheckedChanged(object sender, XLabs.EventArgs<bool> e)
+        private void ChkFilterByHighestRated_CheckedChanged(object sender, CheckedChangedEventArgs e)
         {
             if (e.Value)
             {
@@ -59,5 +59,6 @@ namespace SATMovieBrowser.Controlls
         {
             VM.UpdatePageInfo();
         }
+
     }
 }
