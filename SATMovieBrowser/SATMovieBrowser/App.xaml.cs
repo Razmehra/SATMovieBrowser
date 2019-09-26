@@ -50,7 +50,7 @@ namespace SATMovieBrowser
             InitializeComponent();
 
             MainPage =  new MDHomePage();
-            // MainPage = new NavigationPage( new SATMovieBrowser.MainPage());
+           // MainPage = new NavigationPage( new SATMovieBrowser.TestPage());
             // MainPage = new NavigationPage(new SATMovieBrowser.Views.MDHomePage());
         }
 

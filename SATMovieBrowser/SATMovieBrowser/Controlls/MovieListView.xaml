@@ -16,7 +16,7 @@
     </ContentView.Resources>
     <ContentView.Content>
 
-        <Grid Margin="0" Padding="0" BackgroundColor="LightGray">
+        <Grid Margin="0" Padding="0" BackgroundColor="LightGray" HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand" >
             <Grid.RowDefinitions >
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto"/>
