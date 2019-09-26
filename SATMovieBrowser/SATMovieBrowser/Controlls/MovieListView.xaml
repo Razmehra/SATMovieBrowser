@@ -90,14 +90,10 @@
                     <StackLayout Orientation="Horizontal" HorizontalOptions="FillAndExpand">
                         <StackLayout Orientation="Vertical">
                             <StackLayout Orientation="Horizontal">
-                                <!--<Switch x:Name="FilterByMostPopular"  Toggled="FilterByMostPopular_Toggled" IsToggled="{Binding FilterByMostPopular_Toggled}" />-->
                                 <CheckBox Margin="0"  x:Name="ChkFilterByMostPopular"  CheckedChanged="ChkFilterByMostPopular_CheckedChanged"  />
-
                                 <Label Text="MostPopular" TextColor="Black" FontSize="Small" />
                             </StackLayout>
                             <StackLayout Orientation="Horizontal">
-                                <!--<Switch x:Name="FilterByHighestRated"  Toggled="FilterByHighestRated_Toggled" IsToggled="{Binding FilterByHighestRated_Toggled}" />-->
-
                                 <CheckBox Margin="0"  x:Name="ChkFilterByHighestRated"  CheckedChanged="ChkFilterByHighestRated_CheckedChanged"  />
                                 <Label Text="Highest Rated" TextColor="Black" FontSize="Small" HorizontalOptions="StartAndExpand"/>
                             </StackLayout>
