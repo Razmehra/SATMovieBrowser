@@ -198,9 +198,8 @@ namespace SATMovieBrowser.ViewModels
                 MovieResult = rs;
 
             }
-           
-            await RefreshPagesInformation();
             ActivateIndicator = false;
+            await RefreshPagesInformation();
         });
 
         public void FetchDuration(ObservableCollection<Result> result)
@@ -343,6 +342,8 @@ namespace SATMovieBrowser.ViewModels
                     ActivateIndicator = false;
                     FetchDuration(MovieResult);
                 }
+                ActivateIndicator = false;
+
             }
             catch (Exception)
             {
