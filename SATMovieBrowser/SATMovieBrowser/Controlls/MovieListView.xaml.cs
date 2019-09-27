@@ -60,5 +60,9 @@ namespace SATMovieBrowser.Controlls
             VM.UpdatePageInfo();
         }
 
+        private void CustomStepper_OnValueChanged(object sender, EventArgs e)
+        {
+            VM.UpdatePageInfo();
+        }
     }
 }

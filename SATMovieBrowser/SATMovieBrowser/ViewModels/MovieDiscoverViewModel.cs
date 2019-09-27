@@ -23,6 +23,21 @@ namespace SATMovieBrowser.ViewModels
 {
     class MovieDiscoverViewModel : BaseViewModel
     {
+        private bool _paginationEnabled { get; set; }
+        public bool PaginationEnabled
+        {
+            get { return _paginationEnabled; }
+            set { _paginationEnabled = value; OnPropertyChanged("PaginationEnabled"); }
+        }
+
+        private bool _pageinfoVisible { get; set; }
+        public bool PageInfoVisible
+        {
+            get { return _pageinfoVisible; }
+            set { _pageinfoVisible = value; OnPropertyChanged("PageInfoVisible"); }
+        }
+
+
         private string _searchQuery = "";
         private string FilterType = "popularity.desc";
         private bool _inicallbackFromPagination = false;
@@ -119,6 +134,17 @@ namespace SATMovieBrowser.ViewModels
             set { _movieResult = value; OnPropertyChanged("MovieResult"); }
         }
 
+        private ObservableCollection<Result> _movieSearchResult { get; set; }
+
+        private MovieDiscoverModel SearchedMovies;
+
+        public ObservableCollection<Result> MovieSearchResult
+        {
+            get { return _movieSearchResult; }
+            set { _movieSearchResult = value; OnPropertyChanged("MovieSearchResult"); }
+        }
+
+
         private string _PosterPath { get; set; }
 
         public string PosterPath
@@ -186,6 +212,10 @@ namespace SATMovieBrowser.ViewModels
             if (result.Contains("#429#")) await App.Current.MainPage.DisplayAlert("Http Error", "Too many request..", "Ok");
             if (result.Contains("False")) return;
             discoverdMovies = MovieDiscoverModel.FromJson(result);
+            SearchedMovies = MovieDiscoverModel.FromJson(result);
+
+            //MovieSearchResult = discoverdMovies.Results;
+            string genre = App.MovieGenre.Where(w => w.Key == _gid).FirstOrDefault().Value;
             if (_gid == 0)
             {
                 MovieResult = discoverdMovies.Results;
@@ -193,13 +223,39 @@ namespace SATMovieBrowser.ViewModels
             }
             else
             {
-                string genre = App.MovieGenre.Where(w => w.Key == _gid).FirstOrDefault().Value;
-                ObservableCollection<Result> rs = new ObservableCollection<Result>(discoverdMovies.Results.Where(w => w.Genres.Contains(genre)));
-                MovieResult = rs;
+                MovieResult.Clear();
+                ObservableCollection<Result> movies = new ObservableCollection<Result>(SearchedMovies.Results.Where(w => w.Genres.Contains(genre)));
+                if (movies != null)
+                {
+                    foreach (var movie in movies)
+                    {
+                        // MovieSearchResult.Add(movie);
+                        MovieResult.Add(movie);
+                        PagesInfo = $"Movies searched {MovieResult.Count().ToString()}";
+                    }
+                }
+                PaginationEnabled = false;
+                //PagesInfo = "";
+                PagesInfo = $"Movies searching.. {MovieResult.Count().ToString()}";
+                PageInfoVisible = true;
+                for (int i = 2; i < discoverdMovies.TotalPages; i++)
+                {
+                    result = await MovieService.MovieSearch(query, i);
+                    SearchedMovies = MovieDiscoverModel.FromJson(result);
+                    movies = new ObservableCollection<Result>(SearchedMovies.Results.Where(w => w.Genres.Contains(genre)));
+                    if (movies is null) continue;
+                    foreach (var movie in movies)
+                    {
+                        // MovieSearchResult.Add(movie);
+                        MovieResult.Add(movie);
+                        PagesInfo = $"Movies searching.. {MovieResult.Count().ToString()}";
+                    }
 
+                }
             }
             ActivateIndicator = false;
-            await RefreshPagesInformation();
+            PagesInfo = $"Movies searched {MovieResult.Count().ToString()}";
+            // await RefreshPagesInformation();
         });
 
         public void FetchDuration(ObservableCollection<Result> result)
@@ -251,10 +307,10 @@ namespace SATMovieBrowser.ViewModels
         public MovieDiscoverViewModel(long gid = 0, object MCV = null)
         {
             this._gid = gid;
+            PaginationEnabled = true;
+            PageInfoVisible = true;
             MessagingCenter.Subscribe<NavigationMessage>(this, "MovieListView:ShowHideSearchPanel", ShowHideSearchPanel);
-
             LoadMovieCommand = new Command(LoadMovies);
-
             LoadMovies();
         }
 
@@ -263,6 +319,9 @@ namespace SATMovieBrowser.ViewModels
             if (this._gid == (long)obj.Options)
             {
                 ShowSearchPanel = !ShowSearchPanel;
+                PaginationEnabled = ShowSearchPanel == false;
+                PageInfoVisible = PaginationEnabled;
+                if (ShowSearchPanel) RefreshPagesInformation();
             }
         }
 
@@ -275,7 +334,7 @@ namespace SATMovieBrowser.ViewModels
 
         public async void LoadMovies()
         {
-           // ActivateIndicator = true;
+            // ActivateIndicator = true;
             WebService webServices = new WebService();
             var result = await webServices.GetMovieList(null, FilterType, false, false, 1, this._gid);
             // var Values=
@@ -285,12 +344,12 @@ namespace SATMovieBrowser.ViewModels
             // await Task.Run(async () => { await RefreshPagesInformation(); });
 
             // await RefreshPagesInformation();
-          //  ActivateIndicator = false;
+            //  ActivateIndicator = false;
             MinPageCount = discoverdMovies.Page > 0 ? 1 : 0;
             MaxPageCount = discoverdMovies.TotalPages;
             CurrentPage = MinPageCount;
             PagesInfo = $"{MinPageCount}/{MaxPageCount}";
-            
+
             FetchDuration(MovieResult);
         }
 

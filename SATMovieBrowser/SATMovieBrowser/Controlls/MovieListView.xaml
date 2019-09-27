@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:cnvtr="clr-namespace:SATMovieBrowser.Convertors"
              xmlns:ffimageloading="clr-namespace:FFImageLoading.Forms;assembly=FFImageLoading.Forms"
+             xmlns:ctrl="clr-namespace:SATMovieBrowser.Controlls"
              x:Class="SATMovieBrowser.Controlls.MovieListView"
              >
     <ContentView.Resources>
@@ -16,7 +17,6 @@
         </ResourceDictionary>
     </ContentView.Resources>
     <ContentView.Content>
-
         <Grid Margin="0" Padding="0" BackgroundColor="LightGray" HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand" >
             <Grid.RowDefinitions >
                 <RowDefinition Height="Auto" />
@@ -40,9 +40,10 @@
                 <StackLayout  Orientation="Horizontal" BackgroundColor="LightGray" 
                           Margin="0" Padding="0"
                           HorizontalOptions="Fill" VerticalOptions="FillAndExpand">
-                    <StackLayout Orientation="Vertical"  HorizontalOptions="Start" Spacing="0" Padding="0" Margin="0"  >
-                        <Label x:Name="lblPageInfo" Text="{Binding PagesInfo}" FontSize="Micro" FontAttributes="Bold" TextColor="Black" HorizontalOptions="CenterAndExpand"/>
-                        <Stepper x:Name="PageNavigator" Minimum="{Binding MinPageCount}" Maximum="{Binding MaxPageCount}" Increment="1" Value="{Binding CurrentPage}"  ValueChanged="PageNavigator_ValueChanged" />
+                    <StackLayout Orientation="Vertical"   HorizontalOptions="Start" Spacing="0" Padding="0" Margin="0"  >
+                        <Label x:Name="lblPageInfo" Text="{Binding PagesInfo}" IsVisible="{Binding PageInfoVisible}" FontSize="Micro" FontAttributes="Bold" TextColor="Black" HorizontalOptions="CenterAndExpand"/>
+                        <!--<ctrl:CustomStepper  />-->
+                        <Stepper x:Name="PageNavigator" IsVisible="{Binding PaginationEnabled}"  Minimum="{Binding MinPageCount}" Maximum="{Binding MaxPageCount}" Increment="1" Value="{Binding CurrentPage}"  ValueChanged="PageNavigator_ValueChanged" />
                     </StackLayout>
                     <StackLayout HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand" Margin="0" Padding="0">
                         <ActivityIndicator x:Name="BusyIndicator" IsRunning="{Binding ActivateIndicator}" IsVisible="{Binding ActivateIndicator}"  WidthRequest="20" HeightRequest="20" VerticalOptions="CenterAndExpand" />
@@ -82,7 +83,6 @@
                                                     FadeAnimationForCachedImages="True" FadeAnimationEnabled="True" CacheType="All" 
 			                                        Source="{Binding PosterPath,Converter={StaticResource imagePathConvertor}}"  >
                                                 </ffimageloading:CachedImage>
-
                                             </Frame>
                                             <StackLayout Orientation="Vertical" HorizontalOptions="FillAndExpand" VerticalOptions="CenterAndExpand">
                                                 <Label   Text="{Binding Title}" TextColor="Black" FontSize="Small" FontAttributes="Bold"/>
@@ -97,7 +97,6 @@
                             </ViewCell>
                         </DataTemplate>
                     </ListView.ItemTemplate>
-
                 </ListView>
             </StackLayout>
             <StackLayout Orientation="Horizontal" Grid.Row="2" Grid.Column="0" HorizontalOptions="Fill">
@@ -125,10 +124,8 @@
                             </StackLayout>
                         </StackLayout>
                     </StackLayout>
-
                 </StackLayout>
             </StackLayout>
-
         </Grid>
     </ContentView.Content>
 </ContentView>
